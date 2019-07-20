@@ -10,6 +10,7 @@ This tiny doc is going to help me write some MIPS code for school work
   myPie: .float 3.14
   myDouble: .double 7.202
 	zeroDouble: .double 0.0
+	myArray: .space 12
 ```
 
 ## li types
@@ -213,4 +214,88 @@ addi $s1, $zero, 10
 bgt $s0, $s1, printMessage 
 ```
 
-#code/MIPS
+
+### While Loop
+For while loop, we need 2 labels (something like `while`, `exit` but it doesn’t have to be the exact  same words)    
+```
+	main:
+		# i = 0
+		addi $t0, $zero, 0
+		
+		while:
+			bgt $t0, 10, exit
+			jal printMessage
+			
+			addi $t0, $t0, 1 
+			
+			j while
+		
+		exit:
+			li $v0, 4
+			la $a0, message
+			syscall
+		
+	# End of program
+	li $v0, 10
+	syscall 
+		
+	printMessage:
+		li $v0, 1
+		add $a0, $t0, $zero
+		syscall 
+	
+		li $v0, 4
+		la $a0, space
+		syscall 
+		
+		jr $ra
+```
+
+## Array
+Use a while loop to print array items
+```
+	main:
+		addi $s0, $zero, 4
+		addi $s1, $zero, 10
+		addi $s2, $zero, 12
+		
+		
+		#index = $t0
+		addi $t0, $zero, 0
+		
+		# Assing numbers one by one
+		sw $s0, myArray($t0)
+			addi $t0, $t0, 4
+		sw $s1, myArray($t0)
+			addi $t0, $t0, 4
+		sw $s2, myArray($t0)
+			addi $t0, $t0, 4		
+			
+		# Clear $t0 to 0
+		addi $t0, $zero, 0
+		
+		while:
+			# while loop condition check
+			beq $t0, 12, exit
+			
+			lw $t6, myArray($t0)
+			
+			addi $t0, $t0, 4
+			
+			li $v0, 1
+			move $a0, $t6
+			syscall 
+			
+			j while
+		exit:	
+			# End of program
+			li $v0, 10
+			syscall 
+```
+
+I can also use array initializer
+
+```
+.data
+	myArray: .word 10 15 30 50
+```
